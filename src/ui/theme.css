@@ -1,0 +1,12 @@
+:root {
+  --ms-red: #c00;
+  --ms-red-dark: #a30000;
+  --ms-red-light: #fff0f0;
+  --ms-text: #222;
+  --ms-text-muted: #666;
+  --ms-border: #e8e8e8;
+  --ms-bg: #f7f7f7;
+  --ms-surface: #fff;
+  --ms-radius: 10px;
+  --ms-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}

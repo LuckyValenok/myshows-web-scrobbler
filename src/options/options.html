@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyShows Web Scrobbler — Настройки</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="page-header">
+      <div class="page-header-inner">
+        <span class="brand-mark">M</span>
+        <div>
+          <h1>MyShows Web Scrobbler</h1>
+          <p>Автоматическая отметка просмотров на MyShows.me</p>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <section class="card">
+        <h2>Подключение</h2>
+        <form id="settings-form">
+          <label>
+            <span>Токен MyShows</span>
+            <input type="password" id="token" autocomplete="off" placeholder="Bearer-токен из профиля" />
+            <small>
+              Возьмите токен в
+              <a href="https://myshows.me/profile/watch-history/" target="_blank" rel="noreferrer">профиле MyShows</a>
+            </small>
+          </label>
+
+          <label>
+            <span>URL API скробблинга</span>
+            <input type="url" id="api-url" value="https://myshows.me/scrobble" />
+          </label>
+
+          <label>
+            <span>Порог отметки «просмотрено»</span>
+            <div class="input-suffix">
+              <input type="number" id="scrobble-percent" min="50" max="99" value="80" />
+              <span>%</span>
+            </div>
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" id="enabled" checked />
+            <span>Скробблинг включён</span>
+          </label>
+
+          <div class="actions">
+            <button type="submit">Сохранить</button>
+            <button type="button" id="check-token" class="secondary">Проверить токен</button>
+          </div>
+
+          <p id="feedback" role="status"></p>
+        </form>
+      </section>
+
+      <section class="card sites">
+        <h2>Поддерживаемые сайты</h2>
+        <ul class="site-list">
+          <li><span class="site-dot"></span>HDRezka и зеркала</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="options.ts"></script>
+  </body>
+</html>
