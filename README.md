@@ -13,8 +13,8 @@
 ## Установка (разработка)
 
 ```bash
-pnpm install
-pnpm build
+npm install
+npm run build
 ```
 
 Затем в Chrome:
@@ -22,6 +22,24 @@ pnpm build
 1. Откройте `chrome://extensions`
 2. Включите «Режим разработчика»
 3. «Загрузить распакованное расширение» → папка `dist`
+
+## Сборка и релизы
+
+GitHub Actions автоматически:
+
+- **Build** — на каждый push/PR в `main`: typecheck, сборка, артефакт `dist/` (14 дней)
+- **Release** — при push тега `v*`: zip-архив расширения в [GitHub Releases](https://github.com/LuckyValenok/myshows-web-scrobbler/releases)
+
+```bash
+# Локально собрать zip
+npm run package
+
+# Опубликовать релиз
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Скачанный zip распакуйте и загрузите в Chrome как распакованное расширение, либо перетащите в `chrome://extensions`.
 
 ## Настройка
 
