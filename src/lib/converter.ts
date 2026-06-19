@@ -1,5 +1,6 @@
 import type { ShowMatchOverride } from './match-overrides.js'
 import type { MediaMetadata } from './types.js'
+import { APP_VERSION } from './types.js'
 import type {
   ScrobbleEpisodeRequest,
   ScrobbleMovieRequest,
@@ -14,7 +15,7 @@ export function toScrobbleRequest(
   const base = {
     progress,
     source_app: metadata.siteName,
-    app_version: '0.1.0',
+    app_version: APP_VERSION,
   }
 
   const ids = {

@@ -239,3 +239,8 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+.card-link {
+  margin: 14px 0 0;
+  font-size: 14px;
+}

@@ -1,5 +1,5 @@
 import { contentKey, formatTitle, percentOf, toScrobbleRequest } from './converter.js'
-import { resolveMatchOverride } from './match-overrides.js'
+import { resolveShowMatch } from './show-matcher.js'
 import { MyShowsClient } from './myshows-client.js'
 import { MYSHOWS_ENDPOINTS, type ScrobbleEndpoint } from './scrobble-dto.js'
 import {
@@ -117,11 +117,8 @@ export class ScrobbleHandler {
       session.started = true
     }
 
-    const payload = toScrobbleRequest(
-      update.metadata,
-      percent,
-      await resolveMatchOverride(update.metadata),
-    )
+    const match = await resolveShowMatch(update.metadata, this.settings.myshowsToken)
+    const payload = toScrobbleRequest(update.metadata, percent, match)
     console.debug(`[MyShows] ${endpoint}: ${title} [${update.state}] ${percent.toFixed(1)}%`)
     await this.client.sendScrobble(endpoint, payload)
   }
@@ -142,11 +139,8 @@ export class ScrobbleHandler {
     }
 
     console.info(`[MyShows] Отмечено: ${title} (${percent.toFixed(1)}%)`)
-    const payload = toScrobbleRequest(
-      session.metadata,
-      percent,
-      await resolveMatchOverride(session.metadata),
-    )
+    const match = await resolveShowMatch(session.metadata, this.settings.myshowsToken)
+    const payload = toScrobbleRequest(session.metadata, percent, match)
     await this.client.sendScrobble(MYSHOWS_ENDPOINTS.SCROBBLE_STOP, payload)
   }
 }

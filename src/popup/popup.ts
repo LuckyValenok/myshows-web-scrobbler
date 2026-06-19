@@ -4,6 +4,7 @@ import { formatTitle } from '../lib/converter.js'
 const statusEl = document.getElementById('status')!
 const enabledEl = document.getElementById('enabled') as HTMLInputElement
 const openOptionsEl = document.getElementById('open-options')!
+const openMatchesEl = document.getElementById('open-matches')!
 
 async function load(): Promise<void> {
   const [settingsRes, statusRes] = await Promise.all([
@@ -38,6 +39,12 @@ async function load(): Promise<void> {
   const blocks = await Promise.all(items.map(renderNowPlaying))
   statusEl.innerHTML = blocks.join('')
   bindMatchForms(items)
+  statusEl.querySelectorAll('.open-matches').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault()
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/matches/matches.html') })
+    })
+  })
 }
 
 async function renderNowPlaying(entry: NowPlayingEntry): Promise<string> {
@@ -51,14 +58,14 @@ async function renderNowPlaying(entry: NowPlayingEntry): Promise<string> {
     .filter(Boolean)
     .join(' · ')
 
-  const overrideRes = await chrome.runtime.sendMessage({
-    type: 'GET_MATCH_OVERRIDE',
+  const matchRes = await chrome.runtime.sendMessage({
+    type: 'RESOLVE_SHOW_MATCH',
     payload: { metadata: meta },
   })
-  const override = overrideRes?.override
+  const override = matchRes?.override
   const matchNote = override?.title
-    ? `<p class="match-note ok">MyShows: «${escapeHtml(override.title)}»</p>`
-    : `<p class="match-note">MyShows не сматчил? Укажите название с сайта.</p>`
+    ? `<p class="match-note ok">MyShows: «${escapeHtml(override.title)}»${override.matchSource === 'auto' ? ' <span class="badge">авто</span>' : ''}</p>`
+    : `<p class="match-note">Не удалось сопоставить автоматически. Укажите вручную или откройте <a href="#" class="open-matches">сопоставления</a>.</p>`
 
   const stateLabel = entry.state === 'playing' ? 'Смотрю' : 'Пауза'
   const stateClass = entry.state === 'playing' ? '' : 'paused'
@@ -126,6 +133,11 @@ enabledEl.addEventListener('change', async () => {
 openOptionsEl.addEventListener('click', (e) => {
   e.preventDefault()
   chrome.runtime.openOptionsPage()
+})
+
+openMatchesEl.addEventListener('click', (e) => {
+  e.preventDefault()
+  chrome.tabs.create({ url: chrome.runtime.getURL('src/matches/matches.html') })
 })
 
 load()

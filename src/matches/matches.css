@@ -1,0 +1,140 @@
+@import '../options/options.css';
+
+.top-nav {
+  max-width: 720px;
+  margin: 0 auto 12px;
+  padding: 0 16px;
+}
+
+.top-nav a {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+main {
+  max-width: 720px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+}
+
+.search-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.search-form input:focus {
+  outline: none;
+  border-color: var(--ms-red);
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
+}
+
+.search-results {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-result,
+.match-item {
+  padding: 12px 14px;
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.search-result-title,
+.match-item-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.search-result-meta,
+.match-item-meta {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--ms-text-muted);
+}
+
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.match-item-form {
+  display: grid;
+  gap: 8px;
+}
+
+.match-item-form input {
+  padding: 8px 10px;
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.match-item-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.match-item-actions button {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+button.danger {
+  background: #fff;
+  color: var(--ms-red);
+  border: 1px solid #f3c0c0;
+}
+
+button.danger:hover {
+  background: var(--ms-red-light);
+  border-color: var(--ms-red);
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--ms-red-light);
+  color: var(--ms-red-dark);
+}
+
+.badge.manual {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.hidden {
+  display: none;
+}
+
+.pick-btn {
+  margin-top: 4px;
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Сопоставления — MyShows Web Scrobbler</title>
+    <link rel="stylesheet" href="matches.css" />
+  </head>
+  <body>
+    <div class="page-header">
+      <div class="page-header-inner">
+        <span class="brand-mark">M</span>
+        <div>
+          <h1>Сопоставления</h1>
+          <p>Связь названий с сайтов с сериалами на MyShows</p>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <nav class="top-nav">
+        <a href="../options/options.html">← Настройки</a>
+      </nav>
+
+      <section class="card">
+        <h2>Найти на MyShows</h2>
+        <form id="search-form" class="search-form">
+          <input type="search" id="search-query" placeholder="Название сериала" required />
+          <button type="submit">Искать</button>
+        </form>
+        <div id="search-results" class="search-results"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Сохранённые сопоставления</h2>
+          <button type="button" id="refresh-list" class="secondary">Обновить</button>
+        </div>
+        <p id="list-empty" class="muted hidden">Пока нет сохранённых сопоставлений.</p>
+        <div id="match-list" class="match-list"></div>
+      </section>
+    </main>
+
+    <script type="module" src="matches.ts"></script>
+  </body>
+</html>

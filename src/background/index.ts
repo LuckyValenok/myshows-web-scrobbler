@@ -1,12 +1,21 @@
 import { ScrobbleHandler } from '../lib/scrobble-handler.js'
-import { resolveMatchOverride, saveMatchOverride } from '../lib/match-overrides.js'
+import {
+  deleteMatchOverride,
+  listMatchOverrides,
+  resolveMatchOverride,
+  saveMatchOverride,
+  saveMatchOverrideByKey,
+} from '../lib/match-overrides.js'
 import { loadSettings, saveSettings } from '../lib/settings.js'
+import { resolveShowMatch, searchMyShowsShows } from '../lib/show-matcher.js'
 import type {
   ExtensionSettings,
+  MatchOverrideListItem,
   MediaMetadata,
   Message,
   MessageResponse,
   PlaybackUpdate,
+  ShowMatchOverrideInput,
 } from '../lib/types.js'
 
 const handler = new ScrobbleHandler(undefined, updateBadge)
@@ -45,6 +54,7 @@ async function handleMessage(
   sender: chrome.runtime.MessageSender,
 ): Promise<MessageResponse> {
   const tabId = sender.tab?.id
+  const settings = await loadSettings()
 
   switch (message.type) {
     case 'METADATA_UPDATE': {
@@ -92,13 +102,13 @@ async function handleMessage(
       return { ok: true, nowPlaying: handler.getNowPlaying() }
 
     case 'GET_SETTINGS':
-      return { ok: true, settings: await loadSettings() }
+      return { ok: true, settings }
 
     case 'SAVE_SETTINGS': {
       const partial = (message as { payload: Partial<ExtensionSettings> }).payload
-      const settings = await saveSettings(partial)
-      handler.updateSettings(settings)
-      return { ok: true, settings }
+      const next = await saveSettings(partial)
+      handler.updateSettings(next)
+      return { ok: true, settings: next }
     }
 
     case 'CHECK_TOKEN': {
@@ -113,12 +123,53 @@ async function handleMessage(
       return { ok: true, override: override ?? undefined }
     }
 
+    case 'RESOLVE_SHOW_MATCH': {
+      const { metadata } = (message as { payload: { metadata: MediaMetadata } }).payload
+      if (!settings.myshowsToken) {
+        return { ok: false, error: 'Токен не настроен' }
+      }
+      const override = await resolveShowMatch(metadata, settings.myshowsToken)
+      return { ok: true, override: override ?? undefined }
+    }
+
     case 'SAVE_MATCH_OVERRIDE': {
       const { metadata, override } = (
-        message as { payload: { metadata: MediaMetadata; override: { title?: string; myshowId?: number } } }
+        message as { payload: { metadata: MediaMetadata; override: ShowMatchOverrideInput } }
       ).payload
-      await saveMatchOverride(metadata, override)
+      await saveMatchOverride(metadata, {
+        ...override,
+        matchSource: 'manual',
+        sourceLabel: override.sourceLabel ?? metadata.showTitle ?? metadata.title,
+      })
       return { ok: true }
+    }
+
+    case 'LIST_MATCH_OVERRIDES': {
+      const matches = await listMatchOverrides()
+      return { ok: true, matches: matches as MatchOverrideListItem[] }
+    }
+
+    case 'DELETE_MATCH_OVERRIDE': {
+      const { key } = (message as { payload: { key: string } }).payload
+      await deleteMatchOverride(key)
+      return { ok: true }
+    }
+
+    case 'SAVE_MATCH_BY_KEY': {
+      const { key, override } = (
+        message as { payload: { key: string; override: ShowMatchOverrideInput } }
+      ).payload
+      await saveMatchOverrideByKey(key, { ...override, matchSource: 'manual' })
+      return { ok: true }
+    }
+
+    case 'SEARCH_MYSHOWS_SHOWS': {
+      const { query } = (message as { payload: { query: string } }).payload
+      if (!settings.myshowsToken) {
+        return { ok: false, error: 'Токен не настроен' }
+      }
+      const searchResults = await searchMyShowsShows(settings.myshowsToken, query)
+      return { ok: true, searchResults }
     }
 
     default:

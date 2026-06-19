@@ -1,6 +1,6 @@
 export const DEFAULT_MYSHOWS_URL = 'https://myshows.me/scrobble'
 export const DEFAULT_SCROBBLE_PERCENT = 80
-export const APP_VERSION = '0.1.0'
+export const APP_VERSION = '0.2.0'
 export const PROGRESS_ANTISPAM_THRESHOLD = 1
 
 export interface ExtensionSettings {
@@ -65,8 +65,39 @@ export type Message =
   | { type: 'GET_SETTINGS' }
   | { type: 'SAVE_SETTINGS'; payload: Partial<ExtensionSettings> }
   | { type: 'CHECK_TOKEN'; payload: { token: string; url: string } }
-  | { type: 'SAVE_MATCH_OVERRIDE'; payload: { metadata: MediaMetadata; override: { title?: string; myshowId?: number } } }
+  | { type: 'SAVE_MATCH_OVERRIDE'; payload: { metadata: MediaMetadata; override: ShowMatchOverrideInput } }
   | { type: 'GET_MATCH_OVERRIDE'; payload: { metadata: MediaMetadata } }
+  | { type: 'RESOLVE_SHOW_MATCH'; payload: { metadata: MediaMetadata } }
+  | { type: 'LIST_MATCH_OVERRIDES' }
+  | { type: 'DELETE_MATCH_OVERRIDE'; payload: { key: string } }
+  | { type: 'SAVE_MATCH_BY_KEY'; payload: { key: string; override: ShowMatchOverrideInput } }
+  | { type: 'SEARCH_MYSHOWS_SHOWS'; payload: { query: string } }
+
+export interface ShowMatchOverrideInput {
+  title?: string
+  myshowId?: number
+  sourceLabel?: string
+}
+
+export interface MatchOverrideListItem {
+  key: string
+  override: {
+    title?: string
+    myshowId?: number
+    sourceLabel?: string
+    matchSource?: 'auto' | 'manual'
+    updatedAt?: string
+  }
+}
+
+export interface MyShowsShowResult {
+  id?: number
+  title?: string
+  titleOriginal?: string
+  year?: number
+  kinopoiskId?: number
+  imdbId?: string
+}
 
 export type MessageResponse =
   | {
@@ -76,6 +107,8 @@ export type MessageResponse =
       metadata?: MediaMetadata
       valid?: boolean
       error?: string
-      override?: { title?: string; myshowId?: number }
+      override?: ShowMatchOverrideInput & { matchSource?: 'auto' | 'manual'; updatedAt?: string }
+      matches?: MatchOverrideListItem[]
+      searchResults?: MyShowsShowResult[]
     }
   | { ok: false; error: string }
