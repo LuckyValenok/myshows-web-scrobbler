@@ -1,12 +1,27 @@
 import type { MediaMetadata, NowPlayingEntry } from '../lib/types.js'
 import { formatTitle } from '../lib/converter.js'
+import { bindUpdateBanner, renderUpdateBanner } from '../ui/update-banner.js'
 
 const statusEl = document.getElementById('status')!
+const updateBannerRoot = document.getElementById('update-banner-root')!
 const enabledEl = document.getElementById('enabled') as HTMLInputElement
 const openOptionsEl = document.getElementById('open-options')!
 const openMatchesEl = document.getElementById('open-matches')!
 
+async function loadUpdateBanner(): Promise<void> {
+  const res = await chrome.runtime.sendMessage({ type: 'GET_UPDATE_STATUS' })
+  if (!res?.ok || !res.updateStatus?.updateAvailable) {
+    updateBannerRoot.innerHTML = ''
+    return
+  }
+
+  updateBannerRoot.innerHTML = renderUpdateBanner(res.updateStatus)
+  bindUpdateBanner(updateBannerRoot, res.updateStatus)
+}
+
 async function load(): Promise<void> {
+  await loadUpdateBanner()
+
   const [settingsRes, statusRes] = await Promise.all([
     chrome.runtime.sendMessage({ type: 'GET_SETTINGS' }),
     chrome.runtime.sendMessage({ type: 'GET_STATUS' }),

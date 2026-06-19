@@ -72,6 +72,8 @@ export type Message =
   | { type: 'DELETE_MATCH_OVERRIDE'; payload: { key: string } }
   | { type: 'SAVE_MATCH_BY_KEY'; payload: { key: string; override: ShowMatchOverrideInput } }
   | { type: 'SEARCH_MYSHOWS_SHOWS'; payload: { query: string } }
+  | { type: 'GET_UPDATE_STATUS'; payload?: { force?: boolean } }
+  | { type: 'DISMISS_UPDATE'; payload: { version: string } }
 
 export interface ShowMatchOverrideInput {
   title?: string
@@ -99,6 +101,8 @@ export interface MyShowsShowResult {
   imdbId?: string
 }
 
+import type { UpdateStatus } from './update-check.js'
+
 export type MessageResponse =
   | {
       ok: true
@@ -110,5 +114,6 @@ export type MessageResponse =
       override?: ShowMatchOverrideInput & { matchSource?: 'auto' | 'manual'; updatedAt?: string }
       matches?: MatchOverrideListItem[]
       searchResults?: MyShowsShowResult[]
+      updateStatus?: UpdateStatus
     }
   | { ok: false; error: string }

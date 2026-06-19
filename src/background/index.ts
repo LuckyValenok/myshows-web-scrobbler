@@ -8,6 +8,7 @@ import {
 } from '../lib/match-overrides.js'
 import { loadSettings, saveSettings } from '../lib/settings.js'
 import { resolveShowMatch, searchMyShowsShows } from '../lib/show-matcher.js'
+import { dismissUpdate, getUpdateStatus } from '../lib/update-check.js'
 import type {
   ExtensionSettings,
   MatchOverrideListItem,
@@ -20,12 +21,17 @@ import type {
 
 const handler = new ScrobbleHandler(undefined, updateBadge)
 
+const UPDATE_ALARM = 'checkUpdate'
+let updateAvailable = false
+
 const tabMetadata = new Map<number, MediaMetadata>()
 const tabPlayerFrame = new Map<number, number>()
 
 chrome.runtime.onInstalled.addListener(async () => {
   const settings = await loadSettings()
   handler.updateSettings(settings)
+  chrome.alarms.create(UPDATE_ALARM, { periodInMinutes: 720 })
+  await refreshUpdateState()
 })
 
 chrome.storage.onChanged.addListener(async (changes, area) => {
@@ -35,6 +41,13 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 })
 
 loadSettings().then((settings) => handler.updateSettings(settings))
+refreshUpdateState()
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === UPDATE_ALARM) {
+    refreshUpdateState(true)
+  }
+})
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   handler.clearTab(tabId)
@@ -172,14 +185,42 @@ async function handleMessage(
       return { ok: true, searchResults }
     }
 
+    case 'GET_UPDATE_STATUS': {
+      const force = (message as { payload?: { force?: boolean } }).payload?.force
+      const updateStatus = await getUpdateStatus(force)
+      updateAvailable = updateStatus.updateAvailable
+      updateBadge()
+      return { ok: true, updateStatus }
+    }
+
+    case 'DISMISS_UPDATE': {
+      const { version } = (message as { payload: { version: string } }).payload
+      await dismissUpdate(version)
+      updateAvailable = false
+      updateBadge()
+      return { ok: true }
+    }
+
     default:
       return { ok: false, error: `Unknown message: ${message.type}` }
   }
 }
 
 function updateBadge(): void {
+  if (updateAvailable) {
+    chrome.action.setBadgeText({ text: '↑' })
+    chrome.action.setBadgeBackgroundColor({ color: '#ff9800' })
+    return
+  }
+
   const count = handler.getNowPlaying().length
   const text = count > 0 ? String(count) : ''
   chrome.action.setBadgeText({ text })
   chrome.action.setBadgeBackgroundColor({ color: '#cc0000' })
+}
+
+async function refreshUpdateState(force = false): Promise<void> {
+  const status = await getUpdateStatus(force)
+  updateAvailable = status.updateAvailable
+  updateBadge()
 }

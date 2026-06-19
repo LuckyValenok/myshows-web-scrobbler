@@ -1,4 +1,5 @@
 import type { ExtensionSettings } from '../lib/types.js'
+import { bindUpdateBanner, renderUpdateBanner } from '../ui/update-banner.js'
 
 const form = document.getElementById('settings-form') as HTMLFormElement
 const tokenEl = document.getElementById('token') as HTMLInputElement
@@ -7,13 +8,28 @@ const percentEl = document.getElementById('scrobble-percent') as HTMLInputElemen
 const enabledEl = document.getElementById('enabled') as HTMLInputElement
 const feedbackEl = document.getElementById('feedback')!
 const checkTokenEl = document.getElementById('check-token')!
+const updateBannerRoot = document.getElementById('update-banner-root')!
+const openMatchesLink = document.getElementById('open-matches-link')!
 
 function showFeedback(text: string, type: 'ok' | 'error' | ''): void {
   feedbackEl.textContent = text
   feedbackEl.className = type
 }
 
+async function loadUpdateBanner(): Promise<void> {
+  const res = await chrome.runtime.sendMessage({ type: 'GET_UPDATE_STATUS' })
+  if (!res?.ok || !res.updateStatus?.updateAvailable) {
+    updateBannerRoot.innerHTML = ''
+    return
+  }
+
+  updateBannerRoot.innerHTML = renderUpdateBanner(res.updateStatus)
+  bindUpdateBanner(updateBannerRoot, res.updateStatus)
+}
+
 async function load(): Promise<void> {
+  await loadUpdateBanner()
+
   const res = await chrome.runtime.sendMessage({ type: 'GET_SETTINGS' })
   if (!res?.ok || !res.settings) return
 
@@ -56,6 +72,11 @@ checkTokenEl.addEventListener('click', async () => {
   } else {
     showFeedback(res?.error ?? 'Токен недействителен', 'error')
   }
+})
+
+openMatchesLink.addEventListener('click', (e) => {
+  e.preventDefault()
+  chrome.tabs.create({ url: chrome.runtime.getURL('src/matches/matches.html') })
 })
 
 load()

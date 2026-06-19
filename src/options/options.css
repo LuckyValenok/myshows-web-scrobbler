@@ -51,6 +51,10 @@ body {
   opacity: 0.9;
 }
 
+#update-banner-root .update-banner {
+  margin-bottom: 16px;
+}
+
 main {
   max-width: 560px;
   margin: -16px auto 40px;

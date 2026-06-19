@@ -10,3 +10,61 @@
   --ms-radius: 10px;
   --ms-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
+
+.update-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--ms-red-light);
+  border: 1px solid #f3c0c0;
+  border-radius: var(--ms-radius);
+}
+
+.update-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.update-banner-text strong {
+  color: var(--ms-red-dark);
+}
+
+.update-banner-text span {
+  color: var(--ms-text-muted);
+}
+
+.update-banner-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.update-download {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--ms-red);
+  color: #fff !important;
+  text-decoration: none !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.update-download:hover {
+  background: var(--ms-red-dark);
+}
+
+.update-dismiss {
+  padding: 6px 12px;
+  border: 1px solid var(--ms-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ms-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

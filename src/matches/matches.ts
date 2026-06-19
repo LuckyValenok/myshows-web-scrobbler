@@ -7,6 +7,7 @@ const searchResultsEl = document.getElementById('search-results')!
 const matchListEl = document.getElementById('match-list')!
 const listEmptyEl = document.getElementById('list-empty')!
 const refreshBtn = document.getElementById('refresh-list')!
+const openOptionsLink = document.getElementById('open-options-link')!
 
 function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -178,4 +179,10 @@ function bindSearchResults(results: MyShowsShowResult[], query: string): void {
 }
 
 refreshBtn.addEventListener('click', () => loadMatches())
+
+openOptionsLink.addEventListener('click', (e) => {
+  e.preventDefault()
+  chrome.runtime.openOptionsPage()
+})
+
 loadMatches()
