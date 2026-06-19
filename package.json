@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
+    "prebuild": "node scripts/sync-version.mjs",
     "build": "tsc --noEmit && vite build",
     "check": "tsc --noEmit",
     "package": "npm run build && node scripts/package.mjs"

@@ -36,9 +36,18 @@ GitHub Actions автоматически:
 # Локально собрать zip
 npm run package
 
-# Опубликовать релиз
-git tag v0.1.0
-git push origin v0.1.0
+# Опубликовать релиз (версия берётся из тега)
+git tag v0.3.0
+git push origin v0.3.0
+```
+
+Версия расширения задаётся в `package.json`. Перед каждой сборкой (`npm run build`) она автоматически попадает в `manifest.json` и в код (`APP_VERSION`). В CI при push тега `v*` версия подставляется из тега (например `v0.3.0` → `0.3.0`).
+
+Локально перед релизом можно синхронизировать вручную:
+
+```bash
+npm version 0.3.0 --no-git-tag-version   # обновит package.json
+npm run prebuild                          # обновит manifest.json
 ```
 
 Скачанный zip распакуйте и загрузите в Chrome как распакованное расширение, либо перетащите в `chrome://extensions`.

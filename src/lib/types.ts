@@ -1,6 +1,8 @@
+import pkg from '../../package.json'
+
 export const DEFAULT_MYSHOWS_URL = 'https://myshows.me/scrobble'
 export const DEFAULT_SCROBBLE_PERCENT = 80
-export const APP_VERSION = '0.2.0'
+export const APP_VERSION = pkg.version
 export const PROGRESS_ANTISPAM_THRESHOLD = 1
 
 export interface ExtensionSettings {
